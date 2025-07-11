@@ -10,6 +10,8 @@ import SwiftUI
 
 struct ContentView: View {
 
+    @Environment(\.modelContext) private var modelContext
+    
     @Query(sort: \Game.creationDate, order: .reverse) private var games: [Game]
 
     @State private var boardSize: MapSize = .small
@@ -29,19 +31,44 @@ struct ContentView: View {
                     .pickerStyle(.segmented)
 
                     NavigationLink {
-                        Text("GAME")
+                        GameView(game: Game(gameSize: boardSize))
                     } label: {
                         Label("Start game", systemImage: "gamecontroller")
                     }
 
                 }
 
-                Section("Past games") {
-                    ForEach(games) { _ in
-                        Text("GAME")
+                if !games.isEmpty {
+                    Section("Past games") {
+                        ForEach(games) { game in
+                            NavigationLink {
+                                GameView(game: game)
+                            } label: {
+                                GamePreviewView(game: game)
+                            }
+                            .swipeActions {
+                                Button(
+                                    "Delete",
+                                    systemImage: "trash",
+                                    role: .destructive
+                                ) {
+                                    modelContext.delete(game)
+                                }
+                            }
+                            #if os(macOS)
+                                .contextMenu {
+                                    Button(
+                                        "Delete",
+                                        systemImage: "trash",
+                                        role: .destructive
+                                    ) {
+                                        modelContext.delete(game)
+                                    }
+                                }
+                            #endif
+                        }
                     }
                 }
-
             }
             .navigationTitle("Minesweeper")
         }

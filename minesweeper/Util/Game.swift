@@ -14,20 +14,22 @@ class Game {
     var gameID: UUID = UUID()
 
     var creationDate: Date = Date.now
-    
+
     var gameSize: MapSize
 
     var gameState: gameState
 
+    var score: Int
+
     var fields: [Field] = []
 
-    init(gameID: UUID, gameSize: MapSize, gameState: gameState, fields: [Field])
-    {
-        self.gameID = gameID
+    init(gameSize: MapSize, ) {
+        self.gameID = UUID()
         self.gameSize = gameSize
-        self.gameState = gameState
-        self.fields = fields
-        
+        self.gameState = .ongoing
+        self.fields = []
+        self.score = 0
+
         startGame()
     }
 
@@ -40,19 +42,42 @@ class Game {
             fields.append(field)
         }
     }
-    
+
     func winGame() {
         self.gameState = .won
     }
-    
+
     func loseGame() {
         self.gameState = .lost
+    }
+
+    func getFlags() -> Int {
+        var amountOfFlags: Int = 0
+
+        for i in 0...self.gameSize.AmountOfFields(source: gameSize.rawValue) {
+            if self.fields[i].state == .flagged {
+                amountOfFlags += 1
+            }
+        }
+
+        return amountOfFlags
+    }
+
+    func getShownBlocks() -> Int {
+        var amountofBlocksVisible: Int = 0
+
+        for i in 0...self.gameSize.AmountOfFields(source: gameSize.rawValue) {
+            if self.fields[i].state == .visible {
+                amountofBlocksVisible += 1
+            }
+        }
+        return amountofBlocksVisible
     }
 
 }
 
 public enum gameState: Codable {
-    case outgoing
+    case ongoing
     case won
     case lost
 }
