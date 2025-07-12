@@ -34,10 +34,15 @@ class Game {
     }
 
     func startGame() {
-        let size = self.gameSize.AmountOfFields(source: gameSize.rawValue)
+        let maxX = self.gameSize.width()
+        let maxY = self.gameSize.height()
 
-        for i in 0...size {
-            let field = Field(fieldID: i, state: .hidden, type: .random())
+        for i in 0..<(maxX * maxY) {
+
+            let x = i % maxY
+            let y = i / maxX
+
+            let field = Field(fieldID: i, type: .random(), position: [x: y])
 
             fields.append(field)
         }
