@@ -42,7 +42,11 @@ class Game {
             let x = i % maxY
             let y = i / maxX
 
-            let field = Field(fieldID: i, type: .random(), position: [x: y])
+            let field = Field(
+                fieldID: i,
+                type: .random(),
+                position: Position(X: x, Y: y)
+            )
 
             fields.append(field)
         }
@@ -59,7 +63,7 @@ class Game {
     func getFlags() -> Int {
         var amountOfFlags: Int = 0
 
-        for i in 0...self.gameSize.AmountOfFields(source: gameSize.rawValue) {
+        for i in 0..<self.gameSize.AmountOfFields(source: gameSize.rawValue) {
             if self.fields[i].state == .flagged {
                 amountOfFlags += 1
             }
@@ -71,7 +75,7 @@ class Game {
     func getShownBlocks() -> Int {
         var amountofBlocksVisible: Int = 0
 
-        for i in 0...self.gameSize.AmountOfFields(source: gameSize.rawValue) {
+        for i in 0..<self.gameSize.AmountOfFields(source: gameSize.rawValue) {
             if self.fields[i].state == .visible {
                 amountofBlocksVisible += 1
             }
