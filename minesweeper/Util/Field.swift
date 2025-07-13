@@ -29,7 +29,7 @@ public enum MapSize: String, CaseIterable, Codable {
             return 0
         }
     }
-    
+
     func width() -> Int {
         let numbers = self.rawValue.components(separatedBy: "x")
         if let first = Int(numbers.first ?? "0") {
@@ -38,7 +38,7 @@ public enum MapSize: String, CaseIterable, Codable {
             return 0
         }
     }
-    
+
     func height() -> Int {
         let numbers = self.rawValue.components(separatedBy: "x")
         if let second = Int(numbers.last ?? "0") {
@@ -63,13 +63,28 @@ struct Field: Codable, Hashable {
         case bomb
         case empty
 
+        var numer: Int {
+            if case .numbered(let int) = self {
+                return int
+            }
+            return 0
+        }
+
         static func random() -> BlockType {
-            let randomChoice = Int.random(in: 0...2)
+            let randomChoice = Int.random(in: 0...5)
 
             switch randomChoice {
             case 0:
-                return .numbered(Int.random(in: 1...4))
+                return .empty
             case 1:
+                return .numbered(1)
+            case 2:
+                return .numbered(2)
+            case 3:
+                return .numbered(3)
+            case 4:
+                return .numbered(4)
+            case 5:
                 return .bomb
             default:
                 return .empty
@@ -82,10 +97,10 @@ struct Field: Codable, Hashable {
     var state: fieldState
 
     var type: BlockType
-    
-    var position: [Int:Int]
 
-    init(fieldID: Int, type: BlockType, position: [Int : Int]) {
+    var position: [Int: Int]
+
+    init(fieldID: Int, type: BlockType, position: [Int: Int]) {
         self.fieldID = fieldID
         self.state = .hidden
         self.type = type
