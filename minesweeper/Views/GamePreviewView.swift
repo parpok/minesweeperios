@@ -14,8 +14,11 @@ struct GamePreviewView: View {
     func makeNormalDate(_ date: Date) -> String {
         let relativeDate = RelativeDateTimeFormatter()
         relativeDate.unitsStyle = .full
-        
-        let convertedDate = relativeDate.localizedString(for: date, relativeTo: Date.now)
+
+        let convertedDate = relativeDate.localizedString(
+            for: date,
+            relativeTo: Date.now
+        )
 
         return convertedDate
     }
@@ -50,7 +53,10 @@ struct GamePreviewView: View {
 
                 Spacer()
 
-                Label("5", systemImage: "flag.fill")
+                Label(
+                    "\(game.getFlags())",
+                    systemImage: "flag.fill"
+                )
             }
 
         }
