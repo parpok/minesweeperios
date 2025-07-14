@@ -31,7 +31,12 @@ struct GameView: View {
             }
 
             GeometryReader { geometry in
-                LazyVGrid(columns: Array(repeating: GridItem(), count: game.gameSize.width())) {
+                LazyVGrid(
+                    columns: Array(
+                        repeating: GridItem(),
+                        count: game.gameSize.width()
+                    )
+                ) {
                     ForEach(
                         game.fields,
                         id: \.self
@@ -53,7 +58,30 @@ struct GameView: View {
                             }
 
                         } label: {
-                            Text(" ")
+
+                            switch block.state {
+                            case .hidden:
+                                Text(".")
+                            case .flagged:
+                                Image(systemName: "flag.fill")
+                            case .visible:
+                                switch block.type {
+                                case .bomb:
+                                    Text("BOMB")
+                                case .empty:
+                                    Text("..")
+                                case .numbered(1):
+                                    Text("1")
+                                case .numbered(2):
+                                    Text("2")
+                                case .numbered(3):
+                                    Text("3")
+                                case .numbered(4):
+                                    Text("4")
+                                default:
+                                    Text("")
+                                }
+                            }
                         }
                         .glassEffect(in: .rect(cornerRadius: 16.0))
                         .onLongPressGesture {
@@ -63,6 +91,7 @@ struct GameView: View {
                     }
                 }
             }
+            .padding()
 
         }
         .onAppear {
