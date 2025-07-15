@@ -46,17 +46,31 @@ struct GamePreviewView: View {
             }
 
             HStack {
-                Label(
-                    "\(game.getShownBlocks())/\(game.gameSize.AmountOfFields(source: game.gameSize.rawValue))",
-                    systemImage: "square"
-                )
+                if game.gameState == .ongoing {
+                    Label(
+                        "\(game.getShownBlocks())/\(game.gameSize.AmountOfFields(source: game.gameSize.rawValue))",
+                        systemImage: "square"
+                    )
 
-                Spacer()
+                    Spacer()
 
-                Label(
-                    "\(game.getFlags())",
-                    systemImage: "flag.fill"
-                )
+                    Label(
+                        "\(game.getFlags())",
+                        systemImage: "flag.fill"
+                    )
+                } else {
+                    Label(
+                        "\(game.getCompletedBlocks())/\(game.gameSize.AmountOfFields(source: game.gameSize.rawValue))",
+                        systemImage: "square"
+                    )
+
+                    Spacer()
+
+                    Label(
+                        "\(game.getShownFlags())",
+                        systemImage: "flag.fill"
+                    )
+                }
             }
 
         }

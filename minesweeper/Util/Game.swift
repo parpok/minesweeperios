@@ -23,11 +23,14 @@ class Game {
 
     var fields: [Field] = []
 
+    var fieldsMarked: [Field] = []
+
     init(gameSize: MapSize, ) {
         self.gameID = UUID()
         self.gameSize = gameSize
         self.gameState = .ongoing
         self.fields = []
+        self.fieldsMarked = []
         self.score = 0
 
         startGame()
@@ -57,6 +60,11 @@ class Game {
     }
 
     func loseGame() {
+        for i in self.fields.indices {
+            if fields[i].state == .visible || fields[i].state == .flagged {
+                fieldsMarked.append(fields[i])
+            }
+        }
         self.gameState = .lost
     }
 
@@ -83,6 +91,30 @@ class Game {
         return amountofBlocksVisible
     }
 
+    func getCompletedBlocks() -> Int {
+        var amountofBlocksVisible: Int = 0
+
+        for i in 0..<self.fieldsMarked.count {
+            if self.fields[i].state == .visible {
+                amountofBlocksVisible += 1
+            }
+        }
+        return amountofBlocksVisible
+    }
+
+    func getShownFlags() -> Int {
+        var amountofBlocksVisible: Int = 0
+
+        for i in 0..<self.fieldsMarked.count {
+            if self.fields[i].state == .flagged {
+                amountofBlocksVisible += 1
+            }
+        }
+        return amountofBlocksVisible
+    }
+
+    
+    // TODO: TURN THIS INTO ONE FUNCTION WITH AN ENUM OR BOOL OR SMTHNG
 }
 
 public enum gameState: Codable {
