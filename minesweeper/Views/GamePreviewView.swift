@@ -48,26 +48,26 @@ struct GamePreviewView: View {
             HStack {
                 if game.gameState == .ongoing {
                     Label(
-                        "\(game.getShownBlocks())/\(game.gameSize.AmountOfFields(source: game.gameSize.rawValue))",
+                        "\(game.getItemCount(in: game.fields, matching: .visible))/\(game.gameSize.AmountOfFields(source: game.gameSize.rawValue))",
                         systemImage: "square"
                     )
 
                     Spacer()
 
                     Label(
-                        "\(game.getFlags())",
+                        "\(game.getItemCount(in: game.fields, matching: .flagged))",
                         systemImage: "flag.fill"
                     )
                 } else {
                     Label(
-                        "\(game.getCompletedBlocks())/\(game.gameSize.AmountOfFields(source: game.gameSize.rawValue))",
+                        "\(game.getItemCount(in: game.fieldsMarked, matching: .visible))/\(game.gameSize.AmountOfFields(source: game.gameSize.rawValue))",
                         systemImage: "square"
                     )
 
                     Spacer()
 
                     Label(
-                        "\(game.getShownFlags())",
+                        "\(game.getItemCount(in: game.fieldsMarked, matching: .flagged))",
                         systemImage: "flag.fill"
                     )
                 }
