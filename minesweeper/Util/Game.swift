@@ -56,6 +56,11 @@ class Game {
     }
 
     func winGame() {
+        for i in self.fields.indices {
+            if fields[i].state == .visible || fields[i].state == .flagged {
+                fieldsMarked.append(fields[i])
+            }
+        }
         self.gameState = .won
     }
 
@@ -94,8 +99,8 @@ class Game {
     func getCompletedBlocks() -> Int {
         var amountofBlocksVisible: Int = 0
 
-        for i in 0..<self.fieldsMarked.count {
-            if self.fields[i].state == .visible {
+        for field in self.fieldsMarked {
+            if field.state == .visible {
                 amountofBlocksVisible += 1
             }
         }
@@ -105,8 +110,8 @@ class Game {
     func getShownFlags() -> Int {
         var amountofBlocksVisible: Int = 0
 
-        for i in 0..<self.fieldsMarked.count {
-            if self.fields[i].state == .flagged {
+        for field in self.fieldsMarked {
+            if field.state == .flagged {
                 amountofBlocksVisible += 1
             }
         }
