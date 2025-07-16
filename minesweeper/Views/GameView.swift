@@ -61,6 +61,7 @@ struct GameView: View {
 
                             if block.state == .flagged {
                                 game.fields[block.fieldID].state = .hidden
+                                game.score = game.score - block.type.numer
                             }
 
                             do {
