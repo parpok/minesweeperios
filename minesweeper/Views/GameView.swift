@@ -53,7 +53,9 @@ struct GameView: View {
                                 game.loseGame()
 
                                 for i in game.fields.indices {
-                                    game.fields[i].state = .visible
+                                    if game.fields[i].state != .flagged {
+                                        game.fields[i].state = .visible
+                                    }
                                 }
                             }
 
@@ -70,38 +72,47 @@ struct GameView: View {
                         } label: {
 
                             VStack {
-                                switch block.state {
-                                case .hidden:
-                                    Text(" ")
-                                case .flagged:
-                                    Image(systemName: "flag.fill")
-                                case .visible:
-                                    switch block.type {
-                                    case .bomb:
-                                        Text("💣")
-                                    case .empty:
+                                VStack {
+                                    switch block.state {
+                                    case .hidden:
                                         Text(" ")
-                                    case .numbered(1):
-                                        Text("1")
-                                    case .numbered(2):
-                                        Text("2")
-                                    case .numbered(3):
-                                        Text("3")
-                                    case .numbered(4):
-                                        Text("4")
-                                    default:
-                                        Text(" ")
+                                    case .flagged:
+                                        Image(systemName: "flag.fill")
+                                    case .visible:
+                                        switch block.type {
+                                        case .bomb:
+                                            Text("💣")
+                                        case .empty:
+                                            Text(" ")
+                                        case .numbered(1):
+                                            Text("1")
+                                        case .numbered(2):
+                                            Text("2")
+                                        case .numbered(3):
+                                            Text("3")
+                                        case .numbered(4):
+                                            Text("4")
+                                        default:
+                                            Text(" ")
+                                        }
+                                    }
+                                }
+                                .onLongPressGesture {
+                                    if block.state == .hidden {
+                                        game.fields[block.fieldID].state =
+                                            .flagged
+                                    } else if block.state == .flagged {
+                                        game.fields[block.fieldID].state =
+                                            .hidden
                                     }
                                 }
                             }
+
                             //                            .padding()
                         }
                         .buttonStyle(.bordered)
                         .buttonBorderShape(.roundedRectangle(radius: 8))
                         .glassEffect(in: .rect(cornerRadius: 16.0))
-                        .onLongPressGesture {
-                            game.fields[block.fieldID].state = .flagged
-                        }
 
                     }
                 }
