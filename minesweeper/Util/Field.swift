@@ -28,27 +28,6 @@ struct Field: Codable, Hashable {
             }
             return 0
         }
-
-        static func random() -> BlockType {
-            let randomChoice = Int.random(in: 0...5)
-
-            switch randomChoice {
-            case 0:
-                return .empty
-            case 1:
-                return .numbered(1)
-            case 2:
-                return .numbered(2)
-            case 3:
-                return .numbered(3)
-            case 4:
-                return .numbered(4)
-            case 5:
-                return .bomb
-            default:
-                return .empty
-            }
-        }
     }
 
     let fieldID: Int
