@@ -74,28 +74,33 @@ class Game {
                 let bombX = fields[i].position.X
                 let bombY = fields[i].position.Y
 
-                for xOffset in -1...1 {
-                    for yOffset in -1...1 {
-                        if xOffset == 0 && yOffset == 0 { continue }
-
-                        let neighborX = bombX + xOffset
-                        let neighborY = bombY + yOffset
-
-                        if neighborX >= 0 && neighborX < maxX && neighborY >= 0
-                            && neighborY < maxY
+                for xOffset in -4...4 {
+                    let fieldTomark = bombX + xOffset
+                    for field in fields {
+                        let fieldID = field.fieldID
+                        if field.position.X == fieldTomark
+                           && fieldTomark >= 0 && fieldTomark < maxX
+                            && field.type != .bomb
                         {
-
-                            let neighborIndex = neighborY * maxX + neighborX
-
-                            if fields[neighborIndex].type == .empty {
-                                fields[neighborIndex].type = .numbered(1)
-                            } else if case .numbered(let count) = fields[
-                                neighborIndex
-                            ].type {
-                                fields[neighborIndex].type = .numbered(
-                                    count + 1
-                                )
-                            }
+                            let numberType = abs(xOffset)
+                            self.fields[fieldID].type = .numbered(
+                                numberType
+                            )
+                        }
+                    }
+                }
+                for yOffset in -4...4 {
+                    let fieldTomark = bombY + yOffset
+                    for field in fields {
+                        let fieldID = field.fieldID
+                        if field.position.Y == fieldTomark
+                            && field.position.Y >= 0 && field.position.Y < maxY
+                            && field.type != .bomb
+                        {
+                            let numberType = abs(yOffset)
+                            self.fields[fieldID].type = .numbered(
+                                numberType
+                            )
                         }
                     }
                 }
