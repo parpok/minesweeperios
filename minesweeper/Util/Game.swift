@@ -39,7 +39,6 @@ class Game {
     func startGame() {
         let maxX = self.gameSize.width()
         let maxY = self.gameSize.height()
-
         let maxFields = maxX * maxY
 
         var amountOfBombs: Int {
@@ -48,65 +47,52 @@ class Game {
             return bombs
         }
 
+        fields = []
+        // Initialize all fields as empty
         for i in 0..<(maxFields) {
-
-            let x = i % maxY
+            let x = i % maxX
             let y = i / maxX
-
             let field = Field(
                 fieldID: i,
                 type: .empty,
                 position: Position(X: x, Y: y)
             )
-
             fields.append(field)
         }
-
-        for _ in 0...amountOfBombs {
+        // Place bombs
+        var bombPlacements = Set<Int>()
+        while bombPlacements.count <= amountOfBombs {
             let placement = Int.random(in: 0..<(maxX * maxY))
-
+            bombPlacements.insert(placement)
+        }
+        for placement in bombPlacements {
             fields[placement].type = .bomb
         }
-
-        // ai made this im dead inside ok
-        for i in 0..<maxFields {
-            if fields[i].type == .bomb {
-                let bombX = fields[i].position.X
-                let bombY = fields[i].position.Y
-
-                for xOffset in -4...4 {
-                    let fieldTomark = bombX + xOffset
-                    for field in fields {
-                        let fieldID = field.fieldID
-                        if field.position.X == fieldTomark
-                           && fieldTomark >= 0 && fieldTomark < maxX
-                            && field.type != .bomb
-                        {
-                            let numberType = abs(xOffset)
-                            self.fields[fieldID].type = .numbered(
-                                numberType
-                            )
-                        }
-                    }
-                }
-                for yOffset in -4...4 {
-                    let fieldTomark = bombY + yOffset
-                    for field in fields {
-                        let fieldID = field.fieldID
-                        if field.position.Y == fieldTomark
-                            && field.position.Y >= 0 && field.position.Y < maxY
-                            && field.type != .bomb
-                        {
-                            let numberType = abs(yOffset)
-                            self.fields[fieldID].type = .numbered(
-                                numberType
-                            )
-                        }
+        // Assign numbers to fields adjacent to bombs
+        let neighborOffsets = [
+            (-1, -1), (0, -1), (1, -1),
+            (-1,  0),         (1,  0),
+            (-1,  1), (0,  1), (1,  1)
+        ]
+        for i in 0..<fields.count {
+            guard fields[i].type != .bomb else { continue }
+            let x = fields[i].position.X
+            let y = fields[i].position.Y
+            var bombCount = 0
+            for (dx, dy) in neighborOffsets {
+                let nx = x + dx
+                let ny = y + dy
+                if nx >= 0 && nx < maxX && ny >= 0 && ny < maxY {
+                    let neighborIndex = ny * maxX + nx
+                    if fields[neighborIndex].type == .bomb {
+                        bombCount += 1
                     }
                 }
             }
+            if bombCount > 0 {
+                fields[i].type = .numbered(bombCount)
+            }
         }
-
     }
 
     func winGame() {
