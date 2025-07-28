@@ -42,6 +42,18 @@ struct GameView: View {
                         id: \.self
                     ) { block in
                         Button {
+                            guard block.state == .hidden else { return }
+
+                            if block.type == .bomb {
+                                game.loseGame()
+                                for i in game.fields.indices {
+                                    if game.fields[i].state != .flagged {
+                                        game.fields[i].state = .visible
+                                    }
+                                }
+                                saveGame()
+                                return
+                            }
 
                             game.fields[block.fieldID].state = .visible
 
@@ -49,27 +61,7 @@ struct GameView: View {
                                 game.score += block.type.numer
                             }
 
-                            if block.type == .bomb {
-                                game.loseGame()
-
-                                for i in game.fields.indices {
-                                    if game.fields[i].state != .flagged {
-                                        game.fields[i].state = .visible
-                                    }
-                                }
-                            }
-
-                            if block.state == .flagged {
-                                game.fields[block.fieldID].state = .hidden
-                                game.score = game.score - block.type.numer
-                            }
-
-                            do {
-                                try modelContext.save()
-                            } catch {
-                                print(error.localizedDescription)
-                            }
-
+                            saveGame()
                         } label: {
 
                             VStack {
@@ -99,13 +91,16 @@ struct GameView: View {
                                     }
                                 }
                                 .onLongPressGesture {
+                                    guard block.state != .visible else { return }
                                     if block.state == .hidden {
-                                        game.fields[block.fieldID].state =
-                                            .flagged
+                                        game.fields[block.fieldID].state = .flagged
                                     } else if block.state == .flagged {
-                                        game.fields[block.fieldID].state =
-                                            .hidden
+                                        game.fields[block.fieldID].state = .hidden
+                                        if block.type.numer != 0 {
+                                            game.score -= block.type.numer
+                                        }
                                     }
+                                    saveGame()
                                 }
                             }
 
@@ -123,6 +118,14 @@ struct GameView: View {
         }
         .onAppear {
             modelContext.insert(game)
+        }
+    }
+
+    private func saveGame() {
+        do {
+            try modelContext.save()
+        } catch {
+            print(error.localizedDescription)
         }
     }
 }
@@ -168,3 +171,5 @@ struct GameView: View {
 //                // Force the view to update when orientation changes
 //            }
 //        }}
+
+

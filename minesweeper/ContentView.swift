@@ -11,10 +11,11 @@ import SwiftUI
 struct ContentView: View {
 
     @Environment(\.modelContext) private var modelContext
-    
+
     @Query(sort: \Game.creationDate, order: .reverse) private var games: [Game]
 
     @State private var boardSize: MapSize = .small
+    @State private var currentGame: Game? = nil
 
     var body: some View {
         NavigationStack {
@@ -30,8 +31,10 @@ struct ContentView: View {
                     }
                     .pickerStyle(.segmented)
 
-                    NavigationLink {
-                        GameView(game: Game(gameSize: boardSize))
+                    Button {
+                        let newGame = Game(gameSize: boardSize)
+                        modelContext.insert(newGame)
+                        currentGame = newGame
                     } label: {
                         Label("Start game", systemImage: "gamecontroller")
                     }
@@ -71,6 +74,16 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Minesweeper")
+            .navigationDestination(item: $currentGame) { game in
+                GameView(game: game)
+            }
+            .onAppear {
+                if let ongoingGame = games.first(where: {
+                    $0.gameState == .ongoing
+                }) {
+                    currentGame = ongoingGame
+                }
+            }
         }
     }
 }
