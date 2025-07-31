@@ -43,7 +43,28 @@ struct GameView: View {
                     ) { block in
                         Button {
                             guard block.state == .hidden else { return }
-
+                            
+                            // First click logic (score == 0)
+                            if game.score == 0 {
+                                // If bomb, swap this cell with a non-bomb
+                                if block.type == .bomb {
+                                    // Find a non-bomb cell to swap types with
+                                    if let safeIndex = game.fields.firstIndex(where: { $0.type != .bomb && $0.fieldID != block.fieldID }) {
+                                        game.fields[safeIndex].type = .bomb
+                                        game.fields[block.fieldID].type = .empty
+                                    }
+                                }
+                                
+                                // Reveal the clicked block and its flood fill neighbors
+                                revealFloodFill(from: block.fieldID)
+                                
+                                // Set the score to nonzero so this logic only runs once
+                                game.score = 1
+                                saveGame()
+                                return
+                            }
+                            
+                            // Subsequent clicks (normal gameplay)
                             if block.type == .bomb {
                                 game.loseGame()
                                 for i in game.fields.indices {
@@ -54,13 +75,11 @@ struct GameView: View {
                                 saveGame()
                                 return
                             }
-
+                            
                             game.fields[block.fieldID].state = .visible
-
                             if block.type.numer != 0 {
                                 game.score += block.type.numer
                             }
-
                             saveGame()
                         } label: {
 
@@ -128,6 +147,33 @@ struct GameView: View {
             print(error.localizedDescription)
         }
     }
+    
+    private func revealFloodFill(from index: Int) {
+        // Prevent revealing flagged or already visible fields
+        guard game.fields[index].state == .hidden else { return }
+        game.fields[index].state = .visible
+        
+        // Only flood fill for empty fields
+        if game.fields[index].type == .empty {
+            let maxX = game.gameSize.width()
+            let maxY = game.gameSize.height()
+            let x = game.fields[index].position.X
+            let y = game.fields[index].position.Y
+            let neighborOffsets = [
+                (-1, -1), (0, -1), (1, -1),
+                (-1,  0),         (1,  0),
+                (-1,  1), (0,  1), (1,  1)
+            ]
+            for (dx, dy) in neighborOffsets {
+                let nx = x + dx
+                let ny = y + dy
+                if nx >= 0 && nx < maxX && ny >= 0 && ny < maxY {
+                    let neighborIndex = ny * maxX + nx
+                    revealFloodFill(from: neighborIndex)
+                }
+            }
+        }
+    }
 }
 
 #Preview {
@@ -171,5 +217,3 @@ struct GameView: View {
 //                // Force the view to update when orientation changes
 //            }
 //        }}
-
-
